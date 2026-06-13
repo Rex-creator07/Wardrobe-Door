@@ -1,5 +1,3 @@
-from pathlib import Path
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from catalog.models import Product
 
@@ -13,32 +11,24 @@ PRODUCT_IMAGES = {
 }
 
 class Command(BaseCommand):
-    help = "Assign proper images to each product from static/images/products/"
+    help = "Link products directly to tracked media assets"
 
     def handle(self, *args, **options):
-        images_dir = Path(settings.BASE_DIR) / "static" / "images" / "products"
         updated = 0
 
         for product_name, filename in PRODUCT_IMAGES.items():
-            image_path = images_dir / filename
-            if not image_path.exists():
-                self.stdout.write(self.style.WARNING(f"Missing image: {filename}"))
-                continue
-
             try:
                 product = Product.objects.get(name=product_name)
             except Product.DoesNotExist:
                 self.stdout.write(self.style.WARNING(f"Product not found: {product_name}"))
                 continue
 
-            # FIX: Assign the exact path string relative to your media folder instead of a File upload
-            # Matches the exact folder structure Django generated: products/2026/06/filename
-            target_path = f"products/2026/06/{filename}"
-            
-            product.image = target_path
+            # Directly point the database record to the tracked folder path
+            # This stops Django from appending random strings like _bC5...
+            product.image = f"products/2026/06/{filename}"
             product.save()
 
             updated += 1
-            self.stdout.write(f"Updated image for: {product_name}")
+            self.stdout.write(f"Linked image path for: {product_name}")
 
-        self.stdout.write(self.style.SUCCESS(f"Done. {updated} product images updated."))
+        self.stdout.write(self.style.SUCCESS(f"Done. {updated} paths synchronized."))
