@@ -1,9 +1,6 @@
 from pathlib import Path
-
 from django.conf import settings
-from django.core.files import File
 from django.core.management.base import BaseCommand
-
 from catalog.models import Product
 
 PRODUCT_IMAGES = {
@@ -14,7 +11,6 @@ PRODUCT_IMAGES = {
     "Women's Designer Bag": "womens_bag.jpg",
     "Women's High Heels": "womens_heels.jpg",
 }
-
 
 class Command(BaseCommand):
     help = "Assign proper images to each product from static/images/products/"
@@ -35,11 +31,12 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"Product not found: {product_name}"))
                 continue
 
-            if product.image:
-                product.image.delete(save=False)
-
-            with image_path.open("rb") as image_file:
-                product.image.save(filename, File(image_file), save=True)
+            # FIX: Assign the exact path string relative to your media folder instead of a File upload
+            # Matches the exact folder structure Django generated: products/2026/06/filename
+            target_path = f"products/2026/06/{filename}"
+            
+            product.image = target_path
+            product.save()
 
             updated += 1
             self.stdout.write(f"Updated image for: {product_name}")
