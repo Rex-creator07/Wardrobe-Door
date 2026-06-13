@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load catalog_tags %}
+
+{% block title %}Your Cart - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h1>Your Shopping Cart</h1>
+
+    {% if cart.is_empty %}
+        <div class="empty-cart">
+            <p>Your cart is empty.</p>
+            <a href="{% url 'catalog:products' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    {% else %}
+        <form action="{% url 'shopping_cart:cart' %}" method="post">
+            {% csrf_token %}
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                        <tr>
+                            <td class="product-info">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                <div><h3>{{ item.product.name }}</h3></div>
+                            </td>
+                            <td class="product-price">{{ item.price|currency }}</td>
+                            <td class="product-quantity">
+                                <input type="number" name="quantity_{{ item.product.id }}" value="{{ item.quantity }}" min="1">
+                            </td>
+                            <td class="product-subtotal">{{ item.subtotal|currency }}</td>
+                            <td class="product-actions">
+                                <a href="{% url 'shopping_cart:remove' item.product.id %}" class="remove-item"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="cart-total-label">Total:</td>
+                        <td colspan="2" class="cart-total-amount">{{ cart.get_total|currency }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="cart-actions">
+                <button type="submit" name="update_cart" class="btn btn-secondary">Update Cart</button>
+                <a href="{% url 'shopping_cart:clear' %}" class="btn btn-danger">Clear Cart</a>
+                <a href="{% url 'catalog:products' %}" class="btn btn-primary">Continue Shopping</a>
+                <a href="{% url 'shopping_cart:checkout' %}" class="btn btn-success">Proceed to Checkout</a>
+            </div>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

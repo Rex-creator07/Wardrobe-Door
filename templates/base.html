@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .notification { position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 4px; background: var(--dark-gray); color: var(--white); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; }
+        .notification.show { opacity: 1; transform: translateY(0); }
+        .notification-success { border-left: 4px solid var(--secondary-color); }
+        .notification-error { border-left: 4px solid #ff3333; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <h1><a href="{% url 'catalog:home' %}">{{ SITE_NAME }}</a></h1>
+        </div>
+        <nav class="main-nav">
+            <button class="mobile-menu-toggle" type="button">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-list">
+                <li><a href="{% url 'catalog:home' %}">Home</a></li>
+                <li class="dropdown">
+                    <button class="dropdown-toggle" type="button">
+                        <i class="fa-solid fa-shirt"></i> Men
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-content">
+                        <li><a href="{% url 'catalog:products' %}?category=men&subcategory=upper">Upper</a></li>
+                        <li><a href="{% url 'catalog:products' %}?category=men&subcategory=torso">Torso</a></li>
+                        <li><a href="{% url 'catalog:products' %}?category=men&subcategory=footwear">Footwear</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <button class="dropdown-toggle" type="button">
+                        <i class="fa-solid fa-female"></i> Women
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-content">
+                        <li><a href="{% url 'catalog:products' %}?category=women&subcategory=upper">Upper</a></li>
+                        <li><a href="{% url 'catalog:products' %}?category=women&subcategory=torso">Torso</a></li>
+                        <li><a href="{% url 'catalog:products' %}?category=women&subcategory=footwear">Footwear</a></li>
+                    </ul>
+                </li>
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'panel:dashboard' %}"><i class="fa-solid fa-gauge"></i> Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'account_logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'account_login' %}"><i class="fa-solid fa-user"></i> Login</a></li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'shopping_cart:cart' %}">
+                        <i class="fa-solid fa-cart-shopping"></i> Cart
+                        <span class="cart-count">{{ cart_item_count }}</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'catalog:home' %}">Home</a></li>
+                    <li><a href="{% url 'catalog:products' %}">Products</a></li>
+                    <li><a href="{% url 'shopping_cart:cart' %}">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="{% url 'catalog:products' %}?category=men">Men's Clothing</a></li>
+                    <li><a href="{% url 'catalog:products' %}?category=women">Women's Clothing</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} {{ SITE_NAME }}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.dataset.productId;
+                    const csrfToken = getCookie('csrftoken');
+
+                    this.disabled = true;
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+
+                    fetch('{% url "catalog:add_to_cart" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: 'product_id=' + encodeURIComponent(productId) + '&quantity=1'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Success', data.message, 'success');
+                            const cartCount = document.querySelector('.cart-count');
+                            if (cartCount) cartCount.textContent = data.cart_count;
+                        } else {
+                            showNotification('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(() => showNotification('Error', 'Failed to add product to cart', 'error'))
+                    .finally(() => {
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    });
+                });
+            });
+        });
+
+        function showNotification(title, message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-' + type;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <strong>${title}</strong>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

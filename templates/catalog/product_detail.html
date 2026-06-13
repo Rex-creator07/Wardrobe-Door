@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load catalog_tags %}
+
+{% block title %}{{ product.name }} - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="product-detail-container">
+    <div class="product-detail-grid">
+        <div class="product-gallery">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-main-image" id="mainImage">
+            <div class="product-thumbnails">
+                <img src="{{ product.image.url }}" alt="Main view" class="product-thumbnail active" onclick="changeImage(this.src)">
+            </div>
+        </div>
+
+        <div class="product-info">
+            <h1 class="product-title">{{ product.name }}</h1>
+            <div class="product-meta">
+                <span class="product-category">{{ product.get_category_display }}'s</span>
+                <span class="product-subcategory">{{ product.get_sub_category_display }}</span>
+            </div>
+            <div class="product-price">{{ product.price|currency }}</div>
+            <div class="product-description">
+                <p>{{ product.description|linebreaksbr }}</p>
+            </div>
+
+            <form action="{% url 'catalog:product_detail' product.pk %}" method="post" class="product-form">
+                {% csrf_token %}
+                <div class="quantity-control">
+                    <label for="quantity">Quantity</label>
+                    <div class="quantity-input-group">
+                        <button type="button" class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" class="quantity-input">
+                        <button type="button" class="quantity-btn" onclick="updateQuantity(1)">+</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block add-to-cart-btn">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </form>
+
+            <div class="back-link">
+                <a href="{% url 'catalog:products' %}">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if related_products %}
+        <div class="related-products">
+            <h2>You May Also Like</h2>
+            <div class="products-grid">
+                {% for related in related_products %}
+                    <div class="product-card">
+                        <img src="{{ related.image.url }}" alt="{{ related.name }}">
+                        <div class="product-info">
+                            <h3>{{ related.name }}</h3>
+                            <div class="product-meta">
+                                <span class="product-category">{{ related.get_sub_category_display }}</span>
+                                <span class="product-price">{{ related.price|currency }}</span>
+                            </div>
+                            <div class="product-actions">
+                                <a href="{% url 'catalog:product_detail' related.pk %}" class="btn btn-secondary btn-sm">View Details</a>
+                                <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ related.pk }}" type="button">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function changeImage(src) {
+    document.getElementById('mainImage').src = src;
+    document.querySelectorAll('.product-thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+        if (thumb.src === src) thumb.classList.add('active');
+    });
+}
+function updateQuantity(change) {
+    const input = document.getElementById('quantity');
+    const newValue = parseInt(input.value) + change;
+    if (newValue >= 1) input.value = newValue;
+}
+</script>
+{% endblock %}

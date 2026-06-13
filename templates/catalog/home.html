@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static catalog_tags %}
+
+{% block content %}
+<main>
+    <section class="hero">
+        <h2>Welcome to The Wardrobe Door</h2>
+        <p>Discover Your Perfect Style</p>
+        <a href="{% url 'catalog:products' %}" class="btn btn-primary cta-button">Shop Now</a>
+    </section>
+
+    <section class="featured-products" id="featured">
+        <h2>Featured Products</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+                <div class="product-card">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p class="price">{{ product.price|currency }}</p>
+                    <div class="btn-row">
+                        <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-secondary btn-sm">View Details</a>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.pk }}" type="button">Add to Cart</button>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-products">No products available yet.</div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

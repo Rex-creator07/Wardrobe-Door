@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static catalog_tags %}
+
+{% block title %}{{ page_title }} - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <div class="category-header" style="--header-bg: url('{% static header_image %}')">
+        <h1>{{ page_title }}</h1>
+        <p>{{ page_description }}</p>
+    </div>
+
+    <div class="category-filters">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="category-select">Category</label>
+                <select id="category-select" class="filter-select" onchange="window.location.href=this.value">
+                    <option value="{% url 'catalog:products' %}" {% if not category %}selected{% endif %}>All Categories</option>
+                    <option value="{% url 'catalog:products' %}?category=men{% if sort %}&sort={{ sort }}{% endif %}" {% if category == 'men' %}selected{% endif %}>Men Collection</option>
+                    <option value="{% url 'catalog:products' %}?category=women{% if sort %}&sort={{ sort }}{% endif %}" {% if category == 'women' %}selected{% endif %}>Women Collection</option>
+                </select>
+            </div>
+
+            {% if category %}
+            <div class="filter-group">
+                <label for="subcategory-select">Type</label>
+                <select id="subcategory-select" class="filter-select" onchange="window.location.href=this.value">
+                    <option value="{% url 'catalog:products' %}?category={{ category }}{% if sort %}&sort={{ sort }}{% endif %}" {% if not subcategory %}selected{% endif %}>All Types</option>
+                    <option value="{% url 'catalog:products' %}?category={{ category }}&subcategory=upper{% if sort %}&sort={{ sort }}{% endif %}" {% if subcategory == 'upper' %}selected{% endif %}>Upper Wear</option>
+                    <option value="{% url 'catalog:products' %}?category={{ category }}&subcategory=torso{% if sort %}&sort={{ sort }}{% endif %}" {% if subcategory == 'torso' %}selected{% endif %}>Torso Wear</option>
+                    <option value="{% url 'catalog:products' %}?category={{ category }}&subcategory=footwear{% if sort %}&sort={{ sort }}{% endif %}" {% if subcategory == 'footwear' %}selected{% endif %}>Footwear</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="filter-group">
+                <label for="sort-select">Sort By</label>
+                <select id="sort-select" class="filter-select" onchange="updateSort(this.value)">
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="price-low" {% if sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price-high" {% if sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="name" {% if sort == 'name' %}selected{% endif %}>Name: A to Z</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <div class="product-meta">
+                            <span class="product-category">{{ product.get_sub_category_display }}</span>
+                            <span class="product-price">{{ product.price|currency }}</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-secondary btn-sm">View Details</a>
+                            <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.pk }}" type="button">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-products">
+            <i class="fas fa-box-open"></i>
+            <h2>No Products Found</h2>
+            <p>We couldn't find any products matching your criteria.</p>
+            <a href="{% url 'catalog:products' %}" class="btn btn-primary">View All Products</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function updateSort(sortValue) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('sort', sortValue);
+    window.location.href = '{% url "catalog:products" %}?' + urlParams.toString();
+}
+</script>
+{% endblock %}

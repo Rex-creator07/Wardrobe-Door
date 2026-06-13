@@ -1,0 +1,60 @@
+{% extends "panel/base_admin.html" %}
+
+{% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} Product - {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if edit_mode %}Edit Product{% else %}Add New Product{% endif %}{% endblock %}
+{% block page_icon %}fa-{% if edit_mode %}edit{% else %}plus-circle{% endif %}{% endblock %}
+
+{% block header_actions %}
+    <a href="{% url 'panel:products' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Products</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="admin-card admin-form-card">
+    <h2 class="admin-card-title"><i class="fas fa-image"></i> Product Details</h2>
+    <form method="post" enctype="multipart/form-data" class="admin-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" name="name" value="{{ product.name|default:'' }}" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="men" {% if product.category == 'men' %}selected{% endif %}>Men</option>
+                    <option value="women" {% if product.category == 'women' %}selected{% endif %}>Women</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sub_category">Sub Category</label>
+                <select id="sub_category" name="sub_category">
+                    <option value="upper" {% if product.sub_category == 'upper' %}selected{% endif %}>Upper</option>
+                    <option value="torso" {% if product.sub_category == 'torso' %}selected{% endif %}>Torso</option>
+                    <option value="footwear" {% if product.sub_category == 'footwear' %}selected{% endif %}>Footwear</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="price">Price ($)</label>
+            <input type="number" id="price" name="price" step="0.01" min="0.01" value="{{ product.price|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4">{{ product.description|default:'' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="image">Product Image{% if edit_mode %} (leave blank to keep current){% endif %}</label>
+            <input type="file" id="image" name="image" accept="image/*" {% if not edit_mode %}required{% endif %}>
+            {% if product.image %}
+                <div class="current-image">
+                    <img src="{{ product.image.url }}" alt="Current product image">
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-actions">
+            <a href="{% url 'panel:products' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Product</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

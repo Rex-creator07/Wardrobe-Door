@@ -1,0 +1,47 @@
+{% extends "panel/base_admin.html" %}
+{% load catalog_tags %}
+
+{% block title %}Manage Products - {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Manage Products{% endblock %}
+{% block page_icon %}fa-box{% endblock %}
+
+{% block header_actions %}
+    <a href="{% url 'panel:product_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="admin-card">
+    <h2 class="admin-card-title"><i class="fas fa-list"></i> All Products ({{ products|length }})</h2>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td><img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-thumb"></td>
+                        <td><strong>{{ product.name }}</strong></td>
+                        <td>{{ product.get_category_display }} / {{ product.get_sub_category_display }}</td>
+                        <td>{{ product.price|currency }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="{% url 'panel:product_edit' product.pk %}" class="btn btn-secondary btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                                <a href="{% url 'panel:product_delete' product.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this product?')"><i class="fas fa-trash"></i> Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr class="empty-row"><td colspan="5">No products found. <a href="{% url 'panel:product_add' %}">Add your first product</a>.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

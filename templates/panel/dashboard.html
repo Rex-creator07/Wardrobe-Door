@@ -1,0 +1,61 @@
+{% extends "panel/base_admin.html" %}
+{% load catalog_tags %}
+
+{% block title %}Admin Dashboard - {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+{% block page_icon %}fa-tachometer-alt{% endblock %}
+
+{% block header_actions %}
+    <a href="{% url 'panel:product_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-box"></i></div>
+        <div class="stat-info"><h3>{{ product_count }}</h3><p>Products</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+        <div class="stat-info"><h3>{{ order_count }}</h3><p>Orders</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info"><h3>{{ user_count }}</h3><p>Users</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="stat-info"><h3>{{ total_revenue|currency }}</h3><p>Revenue</p></div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h2 class="admin-card-title"><i class="fas fa-clock"></i> Recent Orders</h2>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                    <tr>
+                        <td><strong>#{{ order.pk|stringformat:"06d" }}</strong></td>
+                        <td>{{ order.user.username }}</td>
+                        <td>{{ order.total_amount|currency }}</td>
+                        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr class="empty-row"><td colspan="5">No orders yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
