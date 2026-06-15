@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load catalog_tags %}
+{% load static catalog_tags %}
 
 {% block title %}Your Cart - {{ SITE_NAME }}{% endblock %}
 
@@ -29,7 +29,7 @@
                     {% for item in cart %}
                         <tr>
                             <td class="product-info">
-                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                <img src="{% static item.product.image %}" alt="{{ item.product.name }}">
                                 <div><h3>{{ item.product.name }}</h3></div>
                             </td>
                             <td class="product-price">{{ item.price|currency }}</td>

@@ -1,4 +1,4 @@
-{% extends "panel/base_admin.html" %}
+{% load static %}{% extends "panel/base_admin.html" %}
 
 {% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} Product - {{ SITE_NAME }}{% endblock %}
 {% block page_title %}{% if edit_mode %}Edit Product{% else %}Add New Product{% endif %}{% endblock %}
@@ -11,7 +11,7 @@
 {% block admin_content %}
 <div class="admin-card admin-form-card">
     <h2 class="admin-card-title"><i class="fas fa-image"></i> Product Details</h2>
-    <form method="post" enctype="multipart/form-data" class="admin-form">
+    <form method="post" class="admin-form">
         {% csrf_token %}
         <div class="form-group">
             <label for="name">Product Name</label>
@@ -43,11 +43,12 @@
             <textarea id="description" name="description" rows="4">{{ product.description|default:'' }}</textarea>
         </div>
         <div class="form-group">
-            <label for="image">Product Image{% if edit_mode %} (leave blank to keep current){% endif %}</label>
-            <input type="file" id="image" name="image" accept="image/*" {% if not edit_mode %}required{% endif %}>
+            <label for="image">Image Path{% if edit_mode %} (leave blank to keep current){% endif %}</label>
+            <input type="text" id="image" name="image" placeholder="e.g. images/products/mens_suit.jpg" value="{{ product.image|default:'' }}" {% if not edit_mode %}required{% endif %}>
+            <small class="form-help">Enter the path relative to the <code>static/</code> directory. Images must be committed to the repository.</small>
             {% if product.image %}
                 <div class="current-image">
-                    <img src="{{ product.image.url }}" alt="Current product image">
+                    <img src="{% static product.image %}" alt="Current product image">
                 </div>
             {% endif %}
         </div>

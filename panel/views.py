@@ -57,7 +57,7 @@ class ProductFormView(StaffRequiredMixin, View):
         sub_category = request.POST.get("sub_category", Product.SUB_UPPER)
         price = request.POST.get("price", "0")
         description = request.POST.get("description", "").strip()
-        image = request.FILES.get("image")
+        image_path = request.POST.get("image", "").strip()
 
         errors = []
         if not name:
@@ -83,13 +83,13 @@ class ProductFormView(StaffRequiredMixin, View):
             product.sub_category = sub_category
             product.price = price
             product.description = description
-            if image:
-                product.image = image
+            if image_path:
+                product.image = image_path
             product.save()
             messages.success(request, "Product updated successfully")
         else:
-            if not image:
-                messages.error(request, "Product image is required")
+            if not image_path:
+                messages.error(request, "Product image path is required")
                 return render(
                     request, self.template_name, {"product": None, "edit_mode": False}
                 )
@@ -99,7 +99,7 @@ class ProductFormView(StaffRequiredMixin, View):
                 sub_category=sub_category,
                 price=price,
                 description=description,
-                image=image,
+                image=image_path,
             )
             messages.success(request, "Product created successfully")
         return redirect("panel:products")

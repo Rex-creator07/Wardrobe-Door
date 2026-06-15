@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
             # Directly point the database record to the tracked folder path
             # This stops Django from appending random strings like _bC5...
-            product.image = f"products/2026/06/{filename}"
+            product.image = f"images/products/{filename}"
             product.save()
 
             updated += 1

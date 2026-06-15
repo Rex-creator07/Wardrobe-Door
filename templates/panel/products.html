@@ -1,5 +1,5 @@
 {% extends "panel/base_admin.html" %}
-{% load catalog_tags %}
+{% load static catalog_tags %}
 
 {% block title %}Manage Products - {{ SITE_NAME }}{% endblock %}
 {% block page_title %}Manage Products{% endblock %}
@@ -26,7 +26,7 @@
             <tbody>
                 {% for product in products %}
                     <tr>
-                        <td><img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-thumb"></td>
+                        <td><img src="{% static product.image %}" alt="{{ product.name }}" class="product-thumb"></td>
                         <td><strong>{{ product.name }}</strong></td>
                         <td>{{ product.get_category_display }} / {{ product.get_sub_category_display }}</td>
                         <td>{{ product.price|currency }}</td>

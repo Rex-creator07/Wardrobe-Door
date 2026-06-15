@@ -1,7 +1,3 @@
-from pathlib import Path
-
-from django.conf import settings
-from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 
@@ -49,25 +45,15 @@ class Command(BaseCommand):
             call_command("setup_site")
             return
 
-        images_dir = Path(settings.BASE_DIR) / "static" / "images" / "products"
-
         for name, category, sub_category, price, description, image_file in SAMPLE_PRODUCTS:
-            image_path = images_dir / image_file
-            if not image_path.exists():
-                image_path = Path(settings.BASE_DIR) / "static" / "images" / "placeholder.jpg"
-            if not image_path.exists():
-                self.stdout.write(self.style.WARNING(f"No image for {name}, skipping."))
-                continue
-
-            product = Product(
+            Product.objects.create(
                 name=name,
                 category=category,
                 sub_category=sub_category,
                 price=price,
                 description=description,
+                image=f"images/products/{image_file}",
             )
-            with image_path.open("rb") as img:
-                product.image.save(image_file, File(img), save=True)
             self.stdout.write(f"Created product: {name}")
 
         self.stdout.write(self.style.SUCCESS("Demo data setup complete."))
