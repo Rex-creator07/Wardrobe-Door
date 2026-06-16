@@ -26,3 +26,19 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var toggle = document.querySelector('.sidebar-toggle');
+    var menu = document.querySelector('.sidebar-menu');
+    if (toggle && menu) {
+        toggle.addEventListener('click', function() {
+            menu.classList.toggle('open');
+            var icon = toggle.querySelector('i');
+            icon.className = menu.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+        });
+    }
+});
+</script>
+{% endblock %}
