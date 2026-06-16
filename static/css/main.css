@@ -602,6 +602,10 @@ p {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    .main-nav {
+        position: static;
+    }
+
     .mobile-menu-toggle {
         display: block;
         color: var(--white);
@@ -613,7 +617,7 @@ p {
         position: absolute;
         top: 100%;
         left: 0;
-        right: 0;
+        width: 100vw;
         background: rgba(0, 0, 0, 0.98);
         flex-direction: column;
         padding: 0.5rem 0;
@@ -3663,13 +3667,14 @@ p {
     .content-container { margin-top: 64px; min-height: calc(100vh - 64px); }
     .main-header { padding: 0.8rem 4%; }
     .logo h1, .logo a { font-size: 1.4rem; letter-spacing: 2px; }
+    .main-nav { position: static; }
     .mobile-menu-toggle { display: block; font-size: 1.4rem; }
     .nav-list {
         display: none;
         position: absolute;
         top: 100%;
         left: 0;
-        right: 0;
+        width: 100vw;
         background: rgba(0, 0, 0, 0.98);
         flex-direction: column;
         padding: 0.5rem 0;
