@@ -28,16 +28,16 @@
                 <tbody>
                     {% for item in cart %}
                         <tr>
-                            <td class="product-info">
+                            <td class="product-info" data-label="Product">
                                 <img src="{% static item.product.image %}" alt="{{ item.product.name }}">
                                 <div><h3>{{ item.product.name }}</h3></div>
                             </td>
-                            <td class="product-price">{{ item.price|currency }}</td>
-                            <td class="product-quantity">
+                            <td class="product-price" data-label="Price">{{ item.price|currency }}</td>
+                            <td class="product-quantity" data-label="Quantity">
                                 <input type="number" name="quantity_{{ item.product.id }}" value="{{ item.quantity }}" min="1">
                             </td>
-                            <td class="product-subtotal">{{ item.subtotal|currency }}</td>
-                            <td class="product-actions">
+                            <td class="product-subtotal" data-label="Subtotal">{{ item.subtotal|currency }}</td>
+                            <td class="product-actions" data-label="">
                                 <a href="{% url 'shopping_cart:remove' item.product.id %}" class="remove-item"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
