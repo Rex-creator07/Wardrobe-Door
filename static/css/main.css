@@ -615,12 +615,10 @@ p {
         right: 0;
         background: rgba(0, 0, 0, 0.98);
         flex-direction: column;
-        padding: 1rem 1.5rem;
+        padding: 0.4rem 0;
         border-bottom: 2px solid var(--secondary-color);
         z-index: 999;
         gap: 0;
-        max-height: calc(100vh - 80px);
-        overflow-y: auto;
     }
 
     .nav-list.active {
@@ -633,14 +631,19 @@ p {
     }
 
     .nav-list a, .dropdown-toggle {
-        padding: 0.8rem 0;
-        font-size: 0.95rem;
+        padding: 0.35rem 1.2rem;
+        font-size: 0.85rem;
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 0.5rem;
     }
 
     .nav-list a::after, .dropdown-toggle::after {
         display: none;
+    }
+
+    .dropdown-toggle i.fa-chevron-down {
+        margin-left: auto;
     }
 
     .dropdown-content {
@@ -661,8 +664,8 @@ p {
     }
 
     .dropdown-content a {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.9rem;
+        padding: 0.3rem 1.2rem 0.3rem 2rem;
+        font-size: 0.8rem;
     }
 
     .hero {
@@ -3668,22 +3671,22 @@ p {
         right: 0;
         background: rgba(0, 0, 0, 0.98);
         flex-direction: column;
-        padding: 1rem 1.5rem;
+        padding: 0.4rem 0;
         border-bottom: 2px solid var(--secondary-color);
         z-index: 999;
         gap: 0;
-        max-height: calc(100vh - 80px);
-        overflow-y: auto;
     }
     .nav-list.active { display: flex; }
     .nav-list li { width: 100%; }
     .nav-list a, .dropdown-toggle {
-        padding: 0.8rem 0;
-        font-size: 0.95rem;
+        padding: 0.35rem 1.2rem;
+        font-size: 0.85rem;
         width: 100%;
-        justify-content: space-between;
+        justify-content: flex-start;
+        gap: 0.5rem;
     }
     .nav-list a::after, .dropdown-toggle::after { display: none; }
+    .dropdown-toggle i.fa-chevron-down { margin-left: auto; }
     .dropdown-content {
         position: static;
         box-shadow: none;
@@ -3697,7 +3700,7 @@ p {
         display: none;
     }
     .dropdown.active .dropdown-content { display: block; }
-    .dropdown-content a { padding: 0.7rem 1.2rem; font-size: 0.9rem; }
+    .dropdown-content a { padding: 0.3rem 1.2rem 0.3rem 2rem; font-size: 0.8rem; }
 
     .hero { height: 70vh; min-height: 400px; }
     .hero h2 { font-size: 2.4rem; letter-spacing: 3px; }
